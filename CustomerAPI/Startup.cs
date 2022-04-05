@@ -1,4 +1,5 @@
 using CustomerAPI.Models;
+using CustomerAPI.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -20,13 +21,34 @@ namespace CustomerAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddRazorPages();
-            services.AddDbContext<CustomerContext>(o => o.UseSqlite("Data source=customers.db"));
+            services.AddDbContext<CustomerContext>(o => o.UseSqlite("Data source=customers.db")); // added context
+            services.AddScoped<ICustomerRepository, CustomerRepository>(); //added repositories
+
+            //ADD SWAGGER GEN
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Version = "V1",
+                    Title = "Customer Api",
+                    Description = "Manage Customer Database"
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //ENABLE SWAGGER UI
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer API V1");
+                c.RoutePrefix = string.Empty;
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

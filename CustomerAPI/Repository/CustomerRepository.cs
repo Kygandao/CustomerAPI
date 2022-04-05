@@ -1,4 +1,5 @@
 ﻿using CustomerAPI.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -27,19 +28,20 @@ namespace CustomerAPI.Repository
             await _context.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<Customer>> Get()
+        public async Task<IEnumerable<Customer>> Get()
         {
-            throw new System.NotImplementedException();
+            return await _context.Customers.ToListAsync(); //get all customers as a list
         }
 
-        public Task<Customer> Get(int id)
+        public async Task<Customer> Get(int id)
         {
-            throw new System.NotImplementedException();
+            return await _context.Customers.FindAsync(id); //get customer by id
         }
 
-        public Task Update(Customer customer)
+        public async Task Update(Customer customer)
         {
-            throw new System.NotImplementedException();
+            _context.Entry(customer).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }
